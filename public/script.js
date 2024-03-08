@@ -29,7 +29,7 @@ navigator.mediaDevices
       setTimeout(() => {
         // user joined
         connectToNewUser(userId, stream);
-      }, 1000);
+      }, 3000);
     });
     // input value
     let text = $("input");
