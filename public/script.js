@@ -4,7 +4,7 @@ const myPeer = new Peer(undefined, {
   path: "/peerjs",
   secure: true,
   host: "v2cam.onrender.com",
-  port: "3030",
+  port: "1000",
 });
 let myVideoStream;
 const myVideo = document.createElement("video");
