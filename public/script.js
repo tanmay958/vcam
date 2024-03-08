@@ -2,7 +2,8 @@ const socket = io("/");
 const videoGrid = document.getElementById("video-grid");
 const myPeer = new Peer(undefined, {
   path: "/peerjs",
-  host: "/",
+  secure: true,
+  host: "v2cam.onrender.com",
   port: "3030",
 });
 let myVideoStream;
@@ -29,7 +30,7 @@ navigator.mediaDevices
       setTimeout(() => {
         // user joined
         connectToNewUser(userId, stream);
-      }, 3000);
+      }, 1000);
     });
     // input value
     let text = $("input");
@@ -134,3 +135,39 @@ const setPlayVideo = () => {
   `;
   document.querySelector(".main__video_button").innerHTML = html;
 };
+
+function startScreenShare() {
+  if (screenSharing) {
+    stopScreenSharing();
+  }
+  navigator.mediaDevices.getDisplayMedia({ video: true }).then((stream) => {
+    screenStream = stream;
+    let videoTrack = screenStream.getVideoTracks()[0];
+    videoTrack.onended = () => {
+      stopScreenSharing();
+    };
+    if (peer) {
+      let sender = currentPeer.peerConnection.getSenders().find(function (s) {
+        return s.track.kind == videoTrack.kind;
+      });
+      sender.replaceTrack(videoTrack);
+      screenSharing = true;
+    }
+    console.log(screenStream);
+  });
+}
+
+function stopScreenSharing() {
+  if (!screenSharing) return;
+  let videoTrack = local_stream.getVideoTracks()[0];
+  if (peer) {
+    let sender = currentPeer.peerConnection.getSenders().find(function (s) {
+      return s.track.kind == videoTrack.kind;
+    });
+    sender.replaceTrack(videoTrack);
+  }
+  screenStream.getTracks().forEach(function (track) {
+    track.stop();
+  });
+  screenSharing = false;
+}
